@@ -5,13 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>약사용 - 태그 굽기</title>
 <style>
-  body { font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 16px; }
-  h1 { font-size: 20px; }
+  * { box-sizing: border-box; }
+  body { font-family: sans-serif; margin: 0; padding: 16px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.desc { margin: 0 0 16px; color: #555; }
+
+  /* 기본 = 모바일 세로: 1단, 위아래로 쌓임 */
+  .layout { display: block; max-width: 480px; margin: 0 auto; }
+  .panel-action { margin-top: 16px; }
+
   .drug { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #ccc;
           border-radius: 8px; margin-bottom: 8px; }
   .drug input { width: 20px; height: 20px; }
   .drug label { flex: 1; }
-  #writeBtn { width: 100%; padding: 16px; font-size: 18px; margin-top: 16px;
+
+  #writeBtn { width: 100%; padding: 16px; font-size: 18px;
               background: #2563eb; color: white; border: none; border-radius: 8px; }
   #writeBtn:disabled { background: #9ca3af; }
   #status { margin-top: 12px; padding: 12px; border-radius: 8px; font-size: 15px; display: none; }
@@ -19,18 +27,42 @@
   #status.err { background: #fee2e2; color: #991b1b; display: block; }
   #status.info { background: #dbeafe; color: #1e40af; display: block; }
   #preview { font-family: monospace; font-size: 13px; color: #555; margin-top: 8px; word-break: break-all; }
+
+  /* 데스크탑 가로: 2단. 약목록 왼쪽 + 버튼/상태 오른쪽에 고정(sticky) */
+  @media (min-width: 800px) {
+    .layout {
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+      align-items: start;
+    }
+    .panel-action {
+      position: sticky;
+      top: 16px;
+      margin-top: 0;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+    }
+  }
 </style>
 </head>
 <body>
 
 <h1>약사용 · 태그 굽기</h1>
-<p>약을 골라 선택 → 태그를 폰 뒤에 대고 [태그에 굽기] 누르세요.</p>
+<p class="desc">약을 골라 선택 → 태그를 폰 뒤에 대고 [태그에 굽기] 누르세요.</p>
 
-<div id="drugList">불러오는 중...</div>
+<div class="layout">
+  <div id="drugList">불러오는 중...</div>
 
-<button id="writeBtn" disabled>태그에 굽기</button>
-<div id="preview"></div>
-<div id="status"></div>
+  <div class="panel-action">
+    <button id="writeBtn" disabled>태그에 굽기</button>
+    <div id="preview"></div>
+    <div id="status"></div>
+  </div>
+</div>
 
 <script>
 // drugs.json 형식: { "version": "...", "drugs": [ {"code":"med01", "name":"...", "shortName":"..."} ] }
