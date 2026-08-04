@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>약사용 - 태그 굽기</title>
+<style>
+  body { font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; }
+  .drug { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #ccc;
+          border-radius: 8px; margin-bottom: 8px; }
+  .drug input { width: 20px; height: 20px; }
+  .drug label { flex: 1; }
+  #writeBtn { width: 100%; padding: 16px; font-size: 18px; margin-top: 16px;
+              background: #2563eb; color: white; border: none; border-radius: 8px; }
+  #writeBtn:disabled { background: #9ca3af; }
+  #status { margin-top: 12px; padding: 12px; border-radius: 8px; font-size: 15px; display: none; }
+  #status.ok { background: #dcfce7; color: #166534; display: block; }
+  #status.err { background: #fee2e2; color: #991b1b; display: block; }
+  #status.info { background: #dbeafe; color: #1e40af; display: block; }
+  #preview { font-family: monospace; font-size: 13px; color: #555; margin-top: 8px; word-break: break-all; }
+</style>
+</head>
+<body>
+
+<h1>약사용 · 태그 굽기</h1>
+<p>약을 골라 선택 → 태그를 폰 뒤에 대고 [태그에 굽기] 누르세요.</p>
+
+<div id="drugList">불러오는 중...</div>
+
+<button id="writeBtn" disabled>태그에 굽기</button>
+<div id="preview"></div>
+<div id="status"></div>
+
+<script>
+// drugs.json 형식: { "version": "...", "drugs": [ {"code":"med01", "name":"...", "shortName":"..."} ] }
+// 팀원 코드 규칙: med01, med02 ... (2-1 번호표와 동일 순번, "med" 접두사)
+
+let drugs = [];
+const selected = new Set();
+
+async function loadDrugs() {
+  try {
+    const res = await fetch('drugs.json');
+    const data = await res.json();
+    drugs = data.drugs;
+    renderList();
+  } catch (e) {
+    document.getElementById('drugList').textContent = 'drugs.json을 못 불러왔습니다. 같은 폴더에 있는지 확인하세요.';
+  }
+}
+
+function renderList() {
+  const list = document.getElementById('drugList');
+  list.innerHTML = '';
+  drugs.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'drug';
+    row.innerHTML = `
+      <input type="checkbox" id="chk-${d.code}" value="${d.code}">
+      <label for="chk-${d.code}">${d.code} · ${d.shortName || d.name}</label>
+    `;
+    row.querySelector('input').addEventListener('change', onToggle);
+    list.appendChild(row);
+  });
+}
+
+function onToggle(e) {
+  const code = e.target.value;
+  if (e.target.checked) selected.add(code);
+  else selected.delete(code);
+  updatePreview();
+}
+
+function updatePreview() {
+  const codes = [...selected].join(',');
+  const url = buildUrl(codes);
+  document.getElementById('preview').textContent = codes ? url : '';
+  document.getElementById('writeBtn').disabled = selected.size === 0;
+}
+
+function buildUrl(codes) {
+  // 배포 후 실제 GitHub Pages 주소로 교체할 것
+  const base = location.href.replace(/write\.html.*$/, 'index.html');
+  return `${base}?m=${codes}`;
+}
+
+document.getElementById('writeBtn').addEventListener('click', async () => {
+  const status = document.getElementById('status');
+  const codes = [...selected].join(',');
+  const url = buildUrl(codes);
+
+  if (!('NDEFReader' in window)) {
+    status.className = 'err';
+    status.textContent = 'Web NFC 미지원 브라우저입니다. Chrome(Android)에서 여세요.';
+    return;
+  }
+
+  try {
+    status.className = 'info';
+    status.textContent = '태그를 폰 뒤에 대세요...';
+    const ndef = new NDEFReader();
+    await ndef.write({ records: [{ recordType: 'url', data: url }] });
+    status.className = 'ok';
+    status.textContent = `굽기 완료: ${codes}`;
+  } catch (err) {
+    status.className = 'err';
+    status.textContent = `굽기 실패: ${err.message}`;
+  }
+});
+
+loadDrugs();
+</script>
+
+</body>
+</html>
