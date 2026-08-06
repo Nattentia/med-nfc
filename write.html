@@ -14,9 +14,10 @@
   .layout { display: block; max-width: 480px; margin: 0 auto; }
   .panel-action { margin-top: 16px; }
 
-  .drug { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #ccc;
+  .drug { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ccc;
           border-radius: 8px; margin-bottom: 8px; }
-  .drug input { width: 20px; height: 20px; }
+  .drug input { width: 20px; height: 20px; flex-shrink: 0; }
+  .drug img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background: #f0f0f0; }
   .drug label { flex: 1; }
 
   #writeBtn { width: 100%; padding: 16px; font-size: 18px;
@@ -65,20 +66,25 @@
 </div>
 
 <script>
-// drugs.json 형식: { "version": "...", "drugs": [ {"code":"med01", "name":"...", "shortName":"..."} ] }
-// 팀원 코드 규칙: med01, med02 ... (2-1 번호표와 동일 순번, "med" 접두사)
+// yaktalk-data(medications.json) 스키마 직접 읽음:
+// [ { "id":"MED001", "image":"images/MED001.jpg", "content": { "ko": { "name":"...", ... } } } ]
+const DATA_BASE = 'https://raw.githubusercontent.com/zzngseo/yaktalk-data/main/';
 
 let drugs = [];
 const selected = new Set();
 
 async function loadDrugs() {
   try {
-    const res = await fetch('drugs.json');
+    const res = await fetch(DATA_BASE + 'medications.json');
     const data = await res.json();
-    drugs = data.drugs;
+    drugs = data.map(d => ({
+      code: d.id,
+      name: d.content.ko.name,
+      image: d.image ? DATA_BASE + d.image : ''
+    }));
     renderList();
   } catch (e) {
-    document.getElementById('drugList').textContent = 'drugs.json을 못 불러왔습니다. 같은 폴더에 있는지 확인하세요.';
+    document.getElementById('drugList').textContent = 'yaktalk-data에서 medications.json을 못 불러왔습니다: ' + e.message;
   }
 }
 
@@ -90,7 +96,8 @@ function renderList() {
     row.className = 'drug';
     row.innerHTML = `
       <input type="checkbox" id="chk-${d.code}" value="${d.code}">
-      <label for="chk-${d.code}">${d.code} · ${d.shortName || d.name}</label>
+      ${d.image ? `<img src="${d.image}" alt="">` : ''}
+      <label for="chk-${d.code}">${d.code} · ${d.name}</label>
     `;
     row.querySelector('input').addEventListener('change', onToggle);
     list.appendChild(row);
