@@ -71,7 +71,7 @@
 const DATA_BASE = 'https://raw.githubusercontent.com/zzngseo/yaktalk-data/main/';
 
 let drugs = [];
-const selected = new Set();
+let selected = null;
 
 async function loadDrugs() {
   try {
@@ -95,7 +95,7 @@ function renderList() {
     const row = document.createElement('div');
     row.className = 'drug';
     row.innerHTML = `
-      <input type="checkbox" id="chk-${d.code}" value="${d.code}">
+      <input type="radio" name="drug" id="chk-${d.code}" value="${d.code}">
       ${d.image ? `<img src="${d.image}" alt="">` : ''}
       <label for="chk-${d.code}">${d.code} · ${d.name}</label>
     `;
@@ -105,29 +105,24 @@ function renderList() {
 }
 
 function onToggle(e) {
-  const code = e.target.value;
-  if (e.target.checked) selected.add(code);
-  else selected.delete(code);
+  selected = e.target.value;
   updatePreview();
 }
 
 function updatePreview() {
-  const codes = [...selected].join(',');
-  const url = buildUrl(codes);
-  document.getElementById('preview').textContent = codes ? url : '';
-  document.getElementById('writeBtn').disabled = selected.size === 0;
+  const url = selected ? buildUrl(selected) : '';
+  document.getElementById('preview').textContent = url;
+  document.getElementById('writeBtn').disabled = !selected;
 }
 
-function buildUrl(codes) {
-  // 배포 후 실제 GitHub Pages 주소로 교체할 것
-  const base = location.href.replace(/write\.html.*$/, 'index.html');
-  return `${base}?m=${codes}`;
+function buildUrl(code) {
+  return `https://yaktalk.vercel.app/med/${code}`;
 }
 
 document.getElementById('writeBtn').addEventListener('click', async () => {
   const status = document.getElementById('status');
-  const codes = [...selected].join(',');
-  const url = buildUrl(codes);
+  const code = selected;
+  const url = buildUrl(code);
 
   if (!('NDEFReader' in window)) {
     status.className = 'err';
@@ -141,7 +136,7 @@ document.getElementById('writeBtn').addEventListener('click', async () => {
     const ndef = new NDEFReader();
     await ndef.write({ records: [{ recordType: 'url', data: url }] });
     status.className = 'ok';
-    status.textContent = `굽기 완료: ${codes}`;
+    status.textContent = `굽기 완료: ${code}`;
   } catch (err) {
     status.className = 'err';
     status.textContent = `굽기 실패: ${err.message}`;
