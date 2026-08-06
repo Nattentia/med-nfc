@@ -75,7 +75,7 @@ let selected = null;
 
 async function loadDrugs() {
   try {
-    const res = await fetch(DATA_BASE + 'medications.json');
+    const res = await fetch(DATA_BASE + 'medications.json', { cache: 'no-store' });
     const data = await res.json();
     drugs = data.map(d => ({
       code: d.id,
