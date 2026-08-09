@@ -1,0 +1,118 @@
+#yaktalk-nfc-overlay {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+  background: #1e3a8a;
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  font-family: -apple-system, "Malgun Gothic", sans-serif;
+  font-size: 14px;
+  max-width: 280px;
+  overflow: hidden;
+}
+
+#yaktalk-nfc-overlay .yt-header {
+  background: #172554;
+  padding: 8px 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#yaktalk-nfc-overlay .yt-close {
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 0 4px;
+}
+
+#yaktalk-nfc-overlay .yt-close:hover {
+  opacity: 1;
+}
+
+#yaktalk-nfc-overlay .yt-item {
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+}
+
+#yaktalk-nfc-overlay .yt-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+#yaktalk-nfc-overlay .yt-item .yt-name {
+  font-weight: bold;
+}
+
+#yaktalk-nfc-overlay .yt-item .yt-code {
+  font-family: monospace;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+#yaktalk-nfc-overlay .yt-item .yt-hint {
+  font-size: 11px;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+#yaktalk-nfc-qr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000000;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#yaktalk-nfc-qr-modal .yt-qr-box {
+  position: relative;
+  background: #fff;
+  color: #111;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  font-family: -apple-system, "Malgun Gothic", sans-serif;
+  max-width: 300px;
+}
+
+#yaktalk-nfc-qr-modal .yt-qr-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+#yaktalk-nfc-qr-modal .yt-qr-close:hover {
+  opacity: 1;
+}
+
+#yaktalk-nfc-qr-modal .yt-qr-title {
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+#yaktalk-nfc-qr-modal img {
+  width: 220px;
+  height: 220px;
+}
+
+#yaktalk-nfc-qr-modal .yt-qr-hint {
+  font-size: 12px;
+  color: #555;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+#yaktalk-nfc-qr-modal .yt-qr-url {
+  font-family: monospace;
+  font-size: 10px;
+  color: #999;
+  margin-top: 8px;
+  word-break: break-all;
+}

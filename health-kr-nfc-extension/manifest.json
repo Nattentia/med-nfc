@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "약톡 NFC 코드 안내",
+  "version": "1.0.0",
+  "description": "약학정보원(health.kr) 검색 결과에서 약톡 NFC 데이터베이스에 등록된 약이면 코드를 화면 구석에 표시합니다.",
+  "permissions": [],
+  "host_permissions": [
+    "https://health.kr/*",
+    "https://www.health.kr/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://health.kr/*", "https://www.health.kr/*"],
+      "js": ["content.js"],
+      "css": ["overlay.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
