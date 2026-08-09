@@ -89,8 +89,29 @@ async function loadDrugs() {
 }
 
 function renderList() {
+  const urlCode = new URLSearchParams(location.search).get('code');
   const list = document.getElementById('drugList');
   list.innerHTML = '';
+
+  if (urlCode) {
+    const d = drugs.find(x => x.code === urlCode);
+    if (!d) {
+      list.textContent = `코드 ${urlCode}에 해당하는 약을 찾을 수 없습니다.`;
+      return;
+    }
+    const row = document.createElement('div');
+    row.className = 'drug';
+    row.innerHTML = `
+      <input type="radio" name="drug" id="chk-${d.code}" value="${d.code}" checked>
+      ${d.image ? `<img src="${d.image}" alt="">` : ''}
+      <label for="chk-${d.code}">${d.code} · ${d.name}</label>
+    `;
+    list.appendChild(row);
+    selected = d.code;
+    updatePreview();
+    return;
+  }
+
   drugs.forEach(d => {
     const row = document.createElement('div');
     row.className = 'drug';
@@ -102,17 +123,6 @@ function renderList() {
     row.querySelector('input').addEventListener('change', onToggle);
     list.appendChild(row);
   });
-  applyCodeFromUrl();
-}
-
-function applyCodeFromUrl() {
-  const code = new URLSearchParams(location.search).get('code');
-  if (!code) return;
-  const radio = document.getElementById('chk-' + code);
-  if (!radio) return;
-  radio.checked = true;
-  selected = code;
-  updatePreview();
 }
 
 function onToggle(e) {
