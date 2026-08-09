@@ -102,6 +102,17 @@ function renderList() {
     row.querySelector('input').addEventListener('change', onToggle);
     list.appendChild(row);
   });
+  applyCodeFromUrl();
+}
+
+function applyCodeFromUrl() {
+  const code = new URLSearchParams(location.search).get('code');
+  if (!code) return;
+  const radio = document.getElementById('chk-' + code);
+  if (!radio) return;
+  radio.checked = true;
+  selected = code;
+  updatePreview();
 }
 
 function onToggle(e) {
